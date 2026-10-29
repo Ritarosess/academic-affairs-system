@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <!-- The DSH file sandbox only allows writes inside this project workspace, so the
+       Maven local repository must live here instead of %USERPROFILE%\.m2\repository.
+       An absolute path is required because a relative one is not reliable for the
+       parent-POM resolution phase. -->
+  <localRepository>C:\Users\香辣土豆丝\Desktop\高校教务系统\.m2\repository</localRepository>
+  <mirrors>
+    <mirror>
+      <id>central-direct</id>
+      <name>Maven Central</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>

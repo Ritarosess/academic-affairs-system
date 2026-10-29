@@ -1,0 +1,28 @@
+# 本地邮件凭据模板
+#
+# 用法：复制本文件为 config\mail.local.ps1 并填入真实值。
+#   Copy-Item config\mail.local.ps1.example config\mail.local.ps1
+#
+# config\mail.local.ps1 已被 .gitignore 忽略，不会进入版本库、也不会随文档分发。
+# 请勿把授权码直接写进 backend\src\main\resources\application.yml —— 那个文件是受版本控制的。
+#
+# 填好后，直接运行 & scripts\start-backend.ps1 即会自动加载本配置（无需任何参数）。
+
+$MailConfig = @{
+    # ── QQ 邮箱 ──────────────────────────────────────────────
+    Host     = 'smtp.qq.com'
+    Port     = 465
+    Ssl      = $true
+    User     = '你的QQ号@qq.com'          # ← 改成你的完整邮箱地址
+    Password = '你的16位SMTP授权码'        # ← 在邮箱「设置 → 账户 → SMTP 服务」中生成
+
+    # ── 163 邮箱参考 ─────────────────────────────────────────
+    # Host = 'smtp.163.com'; Port = 465; Ssl = $true
+    # ── Gmail 参考 ──────────────────────────────────────────
+    # Host = 'smtp.gmail.com'; Port = 587; Ssl = $false; StartTls = $true
+
+    # 发件人。留空 = 自动使用 User。QQ/163 要求两者一致，通常保持留空。
+    From     = ''
+
+    # 邮件正文里的系统入口地址由启动脚本按 -Port 自动设置，无需在此配置
+}

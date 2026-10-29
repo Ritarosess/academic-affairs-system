@@ -1,0 +1,52 @@
+# ---- 构建产物 ----
+target/
+dist/
+build/
+# 由 scripts/build.ps1 从 frontend/dist 复制生成，不需要纳入版本控制
+backend/src/main/resources/static/
+*.class
+*.jar
+
+# ---- 依赖与缓存（沙箱要求缓存落在项目内，但不应纳入版本控制） ----
+node_modules/
+.m2/
+.cache/
+.tmp/
+tools/downloads/
+tools/apache-maven-3.9.9/
+
+# ---- 本地敏感配置（邮件授权码等，绝不入库）----
+config/mail.local.ps1
+
+# ---- 课程作业文档（只提交代码，作业与提交版文档不入库）----
+# 学校下发的表单 + 按表单填写后用于提交的成品
+软件工程开发文档/
+# 设计/需求/测试文稿、UML 图、运行截图，以及由此生成的 .docx
+docs/
+# 作业文档的生成工具：内含学校模板 template-pristine.docx 与各文档正文
+tools/docs-builder/
+# 根目录下的课程设计报告（若存在）
+/学号-姓名-*.docx
+
+# ---- 日志与测试产物 ----
+*.log
+npm-debug.log*
+tools/mvn-*.log
+tools/api-test-output.txt
+tools/sim-out.txt
+# 本地 SMTP 测试接收器收到的邮件
+tools/smtp-inbox/
+
+# ---- IDE ----
+.idea/
+.vscode/
+*.iml
+*.iws
+.classpath
+.project
+.settings/
+
+# ---- 操作系统 ----
+Thumbs.db
+Desktop.ini
+.DS_Store

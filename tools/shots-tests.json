@@ -1,0 +1,20 @@
+[
+  {
+    "name": "5-1-capacity-full",
+    "url": "/student/courses",
+    "login": { "u": "2024005" },
+    "settle": 3000,
+    "actionWait": 400,
+    "actions": [
+      "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const lr = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: '2024006', password: '123456' }) }); const lj = await lr.json(); const sr = await fetch('/api/student/selections', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + lj.data.token }, body: JSON.stringify({ courseId: 2 }) }); const sj = await sr.json(); const rows = [...document.querySelectorAll('.el-table__row')]; let btn = null; for (const r of rows) { if (!r.textContent.includes('CS102')) continue; const b = [...r.querySelectorAll('button')].find((x) => x.textContent.includes('\\u9009\\u8bfe')); if (b) { btn = b; break; } } if (!btn) return 'NO_BTN'; if (btn.disabled) return 'BTN_DISABLED'; btn.click(); await sleep(700); const cbs = [...document.querySelectorAll('.el-message-box__btns button')]; const ok = cbs.find((b) => b.textContent.includes('\\u786e\\u5b9a\\u9009\\u8bfe')); if (!ok) return 'NO_CONFIRM:' + cbs.map((b) => b.textContent.trim()).join('|'); ok.click(); await sleep(1100); return 'OTHER_STUDENT=' + sj.code + ':' + sj.message; })()"
+    ]
+  },
+  {
+    "name": "5-2-score-locked-drop",
+    "url": "/student/my-courses",
+    "login": { "u": "2024002" },
+    "settle": 2600,
+    "hover": "(() => { const row = [...document.querySelectorAll('.el-table__row')].find((r) => r.textContent.includes('EL202')); if (!row) return null; const b = row.querySelector('button'); return b ? (b.parentElement || b) : null; })()",
+    "hoverWait": 1900
+  }
+]

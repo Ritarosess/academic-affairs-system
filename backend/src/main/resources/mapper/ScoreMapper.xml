@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.school.edu.mapper.ScoreMapper">
+
+    <!-- 课程成绩统计：自定义 SQL 示例（对应架构图中的"自定义SQL"能力） -->
+    <select id="statisticsByCourse" resultType="java.util.Map">
+        SELECT COUNT(*)                                             AS totalCount,
+               IFNULL(ROUND(AVG(s.total_score), 2), 0)              AS avgScore,
+               IFNULL(MAX(s.total_score), 0)                        AS maxScore,
+               IFNULL(MIN(s.total_score), 0)                        AS minScore,
+               IFNULL(SUM(CASE WHEN s.total_score &gt;= 60 THEN 1 ELSE 0 END), 0) AS passCount,
+               IFNULL(SUM(CASE WHEN s.total_score &lt; 60 THEN 1 ELSE 0 END), 0)  AS failCount
+        FROM score s
+        WHERE s.course_id = #{courseId}
+    </select>
+
+    <!--
+      学业预警指标聚合：一次查询算出所有学生的
+        累计不及格学分 / 不及格门数 / 已评门数与学分 / 已通过学分
+      以及「单学期最多不及格门数」（按学期分组取最大值，与累计指标形成区分）。
+      使用派生表 LEFT JOIN，避免相关子查询在 GROUP BY 语境下的兼容性问题。
+    -->
+    <select id="selectWarningMetrics" resultType="com.school.edu.vo.WarningMetrics">
+        SELECT base.studentId                                                     AS studentId,
+               base.failedCredits                                                 AS failedCredits,
+               base.failedCourseCount                                             AS failedCourseCount,
+               base.scoredCourseCount                                             AS scoredCourseCount,
+               base.scoredCredits                                                 AS scoredCredits,
+               base.passedCredits                                                 AS passedCredits,
+               IFNULL(ms.maxFailedCount, 0)                                       AS maxSemesterFailedCount
+        FROM (
+            SELECT sc.student_id                                                          AS studentId,
+                   IFNULL(SUM(CASE WHEN sc.total_score &lt; 60 THEN c.credit ELSE 0 END), 0) AS failedCredits,
+                   SUM(CASE WHEN sc.total_score &lt; 60 THEN 1 ELSE 0 END)                  AS failedCourseCount,
+                   COUNT(sc.id)                                                           AS scoredCourseCount,
+                   IFNULL(SUM(c.credit), 0)                                               AS scoredCredits,
+                   IFNULL(SUM(CASE WHEN sc.total_score &gt;= 60 THEN c.credit ELSE 0 END), 0) AS passedCredits
+            FROM score sc
+            JOIN course c ON c.id = sc.course_id
+            WHERE sc.total_score IS NOT NULL
+            GROUP BY sc.student_id
+        ) base
+        LEFT JOIN (
+            SELECT t.student_id AS studentId, MAX(t.cnt) AS maxFailedCount
+            FROM (
+                SELECT sc2.student_id AS student_id, c2.semester_id, COUNT(*) AS cnt
+                FROM score sc2
+                JOIN course c2 ON c2.id = sc2.course_id
+                WHERE sc2.total_score &lt; 60
+                GROUP BY sc2.student_id, c2.semester_id
+            ) t
+            GROUP BY t.student_id
+        ) ms ON ms.studentId = base.studentId
+    </select>
+
+</mapper>

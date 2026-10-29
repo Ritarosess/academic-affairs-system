@@ -1,0 +1,122 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: edu-system
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/school_ms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: "123456"
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: EduHikariPool
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: always
+  # ── 邮件发送（学业预警通知）──────────────────────────────────────────────
+  # 默认指向本地 2525 端口，仅用于配合 tools/smtp-sink.mjs 做发送链路测试。
+  #
+  # 接入真实邮箱最省事的方式（无需手改本文件）：
+  #   pwsh -File scripts\start-backend.ps1 -MailHost smtp.qq.com -MailPort 465 -MailSsl `
+  #        -MailUser 你的邮箱@qq.com -MailPassword 授权码
+  # 也可以直接修改下面的默认值，或用环境变量注入。
+  #
+  # 常见邮箱参数（授权码在邮箱网页端「设置 → 账户 → SMTP 服务」中开启后生成）：
+  #   QQ 邮箱    host=smtp.qq.com    port=465  MAIL_SMTP_SSL=true
+  #   163 邮箱   host=smtp.163.com   port=465  MAIL_SMTP_SSL=true
+  #   Gmail      host=smtp.gmail.com port=587  MAIL_SMTP_STARTTLS=true
+  #   校内自建   host=按学校提供      port=25   （通常无需认证）
+  # 注意：465 用 SSL、587 用 STARTTLS，二选一，不要同时开启。
+  mail:
+    # QQ 邮箱 SMTP（真实发送）。仍可用环境变量覆盖。
+    host: ${MAIL_HOST:smtp.qq.com}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME:}
+    # 填「SMTP 授权码」，不是邮箱登录密码。
+    # 这里刻意留空：真实授权码只放在被 .gitignore 忽略的 config/mail.local.ps1 中，
+    # 或通过 MAIL_PASSWORD 环境变量注入，避免随仓库外泄。
+    password: ${MAIL_PASSWORD:}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:false}
+            required: false
+          ssl:
+            enable: ${MAIL_SMTP_SSL:true}
+          connectiontimeout: 8000
+          timeout: 8000
+          writetimeout: 8000
+  mvc:
+    throw-exception-if-no-handler-found: false
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.school.edu.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    # 不启用 StdOutImpl，SQL 日志交由 SLF4J 统一管理（见文件末尾 logging.level）
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+
+# 业务配置
+app:
+  jwt:
+    # 生产环境请替换为随机的 256 位以上密钥，并通过环境变量注入
+    secret: ${EDU_JWT_SECRET:edu-system-jwt-secret-key-for-school-management-2026-please-change-me}
+    expire-minutes: 120
+  # 管理员重置用户密码时使用的默认密码
+  default-password: "123456"
+  score:
+    # 总评成绩中平时成绩所占权重（期末 = 1 - 该值），配置化以避免硬编码
+    usual-weight: "0.4"
+  # 学业红线预警阈值（两条规则取最严）。阈值外置，便于教务处按学校规定调整。
+  warning:
+    # 两项均为「累计不及格学分 ≥ / 单学期最多不及格门数 ≥」触发
+    yellow:
+      failed-credits: 3
+      semester-failed-count: 2
+    orange:
+      failed-credits: 6
+      semester-failed-count: 3
+    red:
+      failed-credits: 10
+      semester-failed-count: 4
+  # 学业预警邮件通知。
+  # enabled = false 时为「模拟发送」：照常生成邮件内容、写入发送记录，但不连接 SMTP，
+  # 记录状态记为 SIMULATED，邮件正文输出到服务端日志。配置好 SMTP 后改为 true 即可真实投递。
+  mail:
+    enabled: ${APP_MAIL_ENABLED:true}
+    # 发件人。留空 = 自动使用 spring.mail.username。
+    # QQ / 163 等要求发件人与登录账号一致，接入真实邮箱时请保持留空，
+    # 否则会被拒收（550 / From header is missing or invalid）。
+    from: ${MAIL_FROM:}
+    from-name: 高校教务系统
+    subject-prefix: 【学业预警】
+    portal-url: ${APP_MAIL_PORTAL:http://localhost:8080}
+    sender: 教务处
+
+logging:
+  level:
+    root: info
+    com.school.edu: info
+    org.springframework.security: warn
+    # 需要排查 SQL 时，取消下面两行的注释
+    # com.school.edu.mapper: debug
+    # org.mybatis: debug

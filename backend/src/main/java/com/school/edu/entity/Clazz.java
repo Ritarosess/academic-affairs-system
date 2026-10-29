@@ -1,0 +1,24 @@
+package com.school.edu.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+/** 班级表。 */
+@Data
+@TableName("clazz")
+public class Clazz {
+
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    private String name;
+    private Long majorId;
+    private Long gradeId;
+    private String counselor;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+}

@@ -1,0 +1,16 @@
+[
+  { "name": "4-1-login", "url": "/login", "settle": 2500 },
+  { "name": "4-2-dashboard-admin", "url": "/dashboard", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-3-admin-users", "url": "/admin/users", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-4-admin-courses", "url": "/admin/courses", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-5-admin-org", "url": "/admin/org", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-6-admin-semesters", "url": "/admin/semesters", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-7-admin-warnings", "url": "/admin/warnings", "login": { "u": "admin" }, "settle": 3500 },
+  { "name": "4-8-admin-mail", "url": "/admin/mail-settings", "login": { "u": "admin" }, "settle": 2800 },
+  { "name": "4-9-teacher-courses", "url": "/teacher/courses", "login": { "u": "t001" }, "settle": 2800 },
+  { "name": "4-10-teacher-apply", "url": "/teacher/course-applies", "login": { "u": "t001" }, "settle": 2800 },
+  { "name": "4-11-student-select", "url": "/student/courses", "login": { "u": "2024001" }, "settle": 3500 },
+  { "name": "4-12-student-my-courses", "url": "/student/my-courses", "login": { "u": "2024001" }, "settle": 2800 },
+  { "name": "4-13-student-scores", "url": "/student/scores", "login": { "u": "2024001" }, "settle": 2800 },
+  { "name": "4-14-student-profile", "url": "/profile", "login": { "u": "2024001" }, "settle": 2800 }
+]

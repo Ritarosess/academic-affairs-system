@@ -1,0 +1,14 @@
+[
+  {
+    "name": "4-15-teacher-course-students",
+    "url": "/teacher/courses/1/students",
+    "login": { "u": "t001" },
+    "settle": 3000
+  },
+  {
+    "name": "4-16-admin-registrations",
+    "url": "/admin/registrations",
+    "login": { "u": "admin" },
+    "settle": 2800
+  }
+]
